@@ -1,302 +1,143 @@
-# 📚 Z-Library to NotebookLM
+# 📚 Z-Library to NotebookLM MCP Server
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[English](README-EN.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.md)
 
-> Automatically download books from Z-Library and upload them to Google NotebookLM with one command.
+> Model Context Protocol (MCP) Server，自動從 Z-Library 下載書籍並上傳至 Google NotebookLM。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Claude Skill](https://img.shields.io/badge/Claude-Skill-success.svg)](https://claude.ai/claude-code)
+[![MCP Ready](https://img.shields.io/badge/MCP-Ready-green.svg)](https://modelcontextprotocol.org)
 
 ---
 
-## ⚠️ Important Disclaimer
+## ⚠️ 重要免責聲明
 
-**This project is for educational, research, and technical demonstration purposes only. Please strictly comply with local laws and copyright regulations. Use only for:**
+**本專案僅供教育、研究及技術展示用途。請嚴格遵守當地法律與版權規範。僅用於：**
 
-- ✅ Resources you have legal access to
-- ✅ Public domain or open-source licensed documents (e.g., arXiv, Project Gutenberg)
-- ✅ Content you personally own or have authorization to use
+- ✅ 您擁有合法存取權限的資源
+- ✅ 公用領域或開源授權的文件（如 arXiv, Project Gutenberg）
+- ✅ 您個人擁有或已獲授權使用的內容
 
-**The author does not encourage or support any form of copyright infringement and assumes no legal liability. Use at your own risk.**
+**作者不鼓勵也不支持任何形式的侵權行為，且不承擔任何法律責任。使用風險請自行承擔。**
 
-**Please respect intellectual property rights and support authorized reading!**
+**請尊重智慧財產權並支持正版閱讀！**
 
 ---
 
-## ✨ Features
+## ✨ 功能特色
 
-- 🔐 **One-time Login, Forever Use** - Similar to `notebooklm login` experience
-- 📥 **Smart Download** - Prioritizes PDF (preserves formatting), auto-fallback to EPUB → Markdown
-- 📦 **Smart Chunking** - Large files auto-split (>350k words) for reliable CLI upload
-- 🤖 **Fully Automated** - Complete workflow with a single command
-- 🎯 **Format Adaptive** - Automatically detects and processes multiple formats (PDF, EPUB, MOBI, etc.)
-- 📊 **Visual Progress** - Real-time display of download and conversion progress
+- 🔐 **一次登入，永久使用** - 提供類似 `notebooklm login` 的體驗
+- 📥 **智慧下載** - 優先下載 PDF（保留排版），自動降級至 EPUB → Markdown
+- 📦 **智慧分塊** - 針對大檔案（>35 萬字）自動分割，確保上傳穩定
+- 🤖 **MCP 支援** - 專為 Gemini / Claude 等支援 MCP 的 Agent 設計
+- 🎯 **格式自適應** - 自動偵測並處理多種格式（PDF, EPUB, MOBI 等）
 
-## 🎯 Use as Claude Skill (Recommended)
+## 🚀 作為 MCP Server 使用（推薦）
 
-### Installation
+### 安裝
+
+確保您已安裝 Python 3.8+。
 
 ```bash
-# 1. Navigate to Claude Skills directory
-cd ~/.claude/skills  # Windows: %APPDATA%\Claude\skills
-
-# 2. Clone the repository
-git clone https://github.com/zstmfhy/zlibrary-to-notebooklm.git zlib-to-notebooklm
-
-# 3. Complete initial login
-cd zlib-to-notebooklm
-python3 scripts/login.py
+#  安裝專案
+pip install .
 ```
 
-### Usage
+### 設定 Antigravity / Gemini
 
-After installation, simply tell Claude Code:
+將以下設定新增至您的 MCP 設定檔（例如 `Gemini-MCP.md` 或全域設定）：
+
+```json
+{
+  "mcpServers": {
+    "zlib-tool": {
+      "command": "python",
+      "args": ["-m", "zlib_notebooklm.server"]
+    }
+  }
+}
+```
+
+### 使用方法
+
+安裝並設定完成後，您可以直接與 Gemini 對話：
 
 ```text
-Use zlib-to-notebooklm skill to process this Z-Library link:
+幫我下載這本書並上傳到 NotebookLM：
 https://zh.zlib.li/book/25314781/aa05a1/book-title
 ```
 
-Claude will automatically:
+Gemini 將會自動呼叫 `zlib_upload` 工具：
 
-- Download the book (prioritizing PDF)
-- Create NotebookLM notebook
-- Upload the file
-- Return notebook ID
-- Suggest follow-up questions
+1.  下載書籍
+2.  建立 NotebookLM 筆記本
+3.  上傳檔案
+4.  回傳筆記本 ID 給您
 
 ---
 
-## 🛠️ Traditional Installation
+## 🛠️ 首次設定（登入）
 
-### 1. Install Dependencies
+在使用之前，您需要登入 Z-Library 一次以儲存工作階段。
 
-```bash
-# Clone repository
-git clone https://github.com/zstmfhy/zlibrary-to-notebooklm.git
-cd zlibrary-to-notebooklm
+**方式一：透過 Gemini 呼叫**
 
-# Install Python dependencies
-pip install playwright ebooklib
-
-# Install Playwright browser
-playwright install chromium
-```
-
-### 2. Login to Z-Library (One-time Only)
-
-```bash
-python3 scripts/login.py
-```
-
-**Steps:**
-1. Browser will automatically open and visit Z-Library
-2. Complete login in the browser
-3. Return to terminal and press **ENTER**
-4. Session saved!
-
-### 3. Download and Upload Books
-
-```bash
-python3 scripts/upload.py "https://zh.zlib.li/book/..."
-```
-
-**Automatically completes:**
-
-- ✅ Login using saved session
-- ✅ Download PDF (preserves formatting)
-- ✅ Fallback to EPUB → Markdown
-- ✅ Smart chunking for large files (>350k words)
-- ✅ Create NotebookLM notebook
-- ✅ Upload content
-- ✅ Return notebook ID
-
-## 📖 Usage Examples
-
-### Basic Usage
-
-```bash
-# Download single book
-python3 scripts/upload.py "https://zh.zlib.li/book/12345/..."
-```
-
-### Batch Processing
-
-```bash
-# Batch download multiple books
-for url in "url1" "url2" "url3"; do
-    python3 scripts/upload.py "$url"
-done
-```
-
-### Using NotebookLM
-
-```bash
-# After upload, use the notebook
-notebooklm use <returned-notebook-id>
-
-# Start asking questions
-notebooklm ask "What are the core concepts of this book?"
-notebooklm ask "Summarize Chapter 3"
-```
-
-## 🔄 Workflow
+告訴 Gemini：
 
 ```text
-Z-Library URL
-    ↓
-1. Launch browser (using saved session)
-    ↓
-2. Visit book page
-    ↓
-3. Smart format selection:
-   - Priority: PDF (preserves formatting)
-   - Fallback: EPUB (convert to Markdown)
-   - Other formats (auto-convert)
-    ↓
-4. Download to ~/Downloads
-    ↓
-5. Format processing:
-   - PDF → Use directly
-   - EPUB → Convert to Markdown
-   - Check file size → Auto-chunk if >350k words
-    ↓
-6. Create NotebookLM notebook
-    ↓
-7. Upload content (chunked files uploaded individually)
-    ↓
-8. Return notebook ID ✅
+請幫我登入 Z-Library
 ```
 
-## 📁 Project Structure
+它會呼叫 `zlib_login` 工具，並在您的電腦上開啟瀏覽器供您登入。
+
+**方式二：手動執行**
+
+```bash
+# 在專案目錄下
+python -m zlib_notebooklm.server
+# 注意：這將啟動 server，通常建議直接編寫一個簡單的 script 呼叫 auth 模組，或直接使用舊版 script
+```
+
+---
+
+## 📁 專案結構
 
 ```text
 zlibrary-to-notebooklm/
-├── SKILL.md              # Core Skill definition (required)
-├── README.md             # Project documentation
-├── README.zh-CN.md       # Chinese documentation
-├── LICENSE               # MIT License
-├── package.json          # npm config (for Claude Code skill)
-├── skill.yaml            # Skill configuration
-├── requirements.txt      # Python dependencies
-├── scripts/              # Executable scripts (official standard)
-│   ├── login.py         # Login script
-│   ├── upload.py        # Download + Upload script
-│   └── convert_epub.py  # EPUB conversion tool
-├── docs/                 # Documentation
-│   ├── WORKFLOW.md      # Workflow details
-│   └── TROUBLESHOOTING.md # Troubleshooting guide
-└── INSTALL.md            # Installation guide
+├── src/zlib_notebooklm/  # Python Package
+│   ├── server.py        # MCP Server Entrypoint
+│   ├── core.py          # 核心邏輯
+│   ├── auth.py          # 登入邏輯
+│   └── epub_converter.py# EPUB 轉換工具
+├── pyproject.toml        # 專案設定與相依性
+├── README.md             # 繁體中文文件（主頁）
+├── README-EN.md          # 英文文件
+├── scripts/              # [Legacy] 舊版 CLI 腳本
+└── ...
 ```
 
-## 🔧 Configuration
+## 🔧 設定檔位置
 
-All configurations are saved in `~/.zlibrary/` directory:
+所有設定皆儲存於 `~/.zlibrary/` 目錄：
 
 ```text
 ~/.zlibrary/
-├── storage_state.json    # Login session (cookies)
-├── browser_profile/      # Browser data
-└── config.json          # Account config (backup)
+├── storage_state.json    # 登入工作階段（cookies）
+├── browser_profile/      # 瀏覽器資料
+└── config.json          # 帳戶設定（備份）
 ```
 
-## 🛠️ Dependencies
+## 📊 NotebookLM 限制最佳化
 
-- **Python 3.8+**
-- **playwright** - Browser automation
-- **ebooklib** - EPUB file processing
-- **NotebookLM CLI** - Google NotebookLM command-line tool
+本工具已內建針對 NotebookLM 的最佳化處理：
 
-## 📝 Command Reference
+- **單檔限制**：若轉換後的 Markdown 超過 35 萬字，將自動智慧分割為多個章節檔案，並分別上傳至同一個筆記本。
+- **格式優先**：優先使用 PDF 以獲得最佳的排版分析效果。
 
-### Login
+## 🤝 貢獻
 
-```bash
-python3 scripts/login.py
-```
+歡迎提交 PR 或 Issue。
 
-### Upload
+## 📄 授權
 
-```bash
-python3 scripts/upload.py <Z-Library URL>
-```
-
-### Check Session Status
-
-```bash
-ls -lh ~/.zlibrary/storage_state.json
-```
-
-### Re-login
-
-```bash
-rm ~/.zlibrary/storage_state.json
-python3 scripts/login.py
-```
-
-## 📊 NotebookLM Limits
-
-This project is optimized for NotebookLM's actual limitations:
-
-### Official Limits
-- **File Size**: 200MB per file
-- **Words per Source**: 500,000 words
-
-### Practical Recommendations (CLI Tool)
-- **Safe Word Count**: Maximum 350,000-380,000 words per file
-- **Reason**: NotebookLM CLI tool has timeout and API limitations with large files
-
-### Our Solution
-✅ **Automatic File Chunking**:
-- When EPUB is converted to Markdown, the script automatically detects word count
-- Files exceeding 350,000 words are automatically split into multiple smaller files
-- Each chunk is uploaded individually to the same NotebookLM notebook
-- Smart chapter-based splitting preserves content integrity
-
-**Example**:
-```bash
-📊 Word count: 2,700,000
-⚠️  File exceeds 350k words (NotebookLM CLI limit)
-📊 File too large, starting split...
-   Total words: 2,700,000
-   Max per chunk: 350,000 words
-   ✅ Part 1/8: 342,000 words
-   ✅ Part 2/8: 338,000 words
-   ...
-📦 Detected 8 file chunks
-```
-
-### Why 350k Words?
-- Official limit is 500k words, but CLI tools tend to timeout near this limit
-- 350k words is a tested safe value for reliable uploads
-- Web interface can handle larger files directly, but CLI tools require chunking
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## 🙏 Acknowledgments
-
-- [Z-Library](https://zh.zlib.li/) - World's largest digital library
-- [Google NotebookLM](https://notebooklm.google.com/) - AI-powered note-taking tool
-- [Playwright](https://playwright.dev/) - Powerful browser automation tool
-
-## 📮 Contact
-
-- GitHub Issues: [Submit issues](https://github.com/zstmfhy/zlibrary-to-notebooklm/issues)
-- Discussions: [GitHub Discussions](https://github.com/zstmfhy/zlibrary-to-notebooklm/discussions)
-
----
-
-**⭐ If this project helps you, please give it a Star!**
+MIT License

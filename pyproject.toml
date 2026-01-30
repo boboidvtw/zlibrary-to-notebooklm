@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zlibrary-to-notebooklm"
+version = "0.1.0"
+description = "Z-Library to NotebookLM MCP Server"
+readme = "README.md"
+authors = [
+  { name = "zstmfhy" },
+]
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "mcp",
+    "playwright",
+    "ebooklib",
+    "beautifulsoup4",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/zstmfhy/zlibrary-to-notebooklm"
+"Bug Tracker" = "https://github.com/zstmfhy/zlibrary-to-notebooklm/issues"
