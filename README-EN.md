@@ -140,3 +140,9 @@ Contributions are welcome! Please submit a PR or Issue.
 ## 📄 License
 
 MIT License
+
+## ☕ Support the Project
+
+If you find this tool helpful, please consider buying me a coffee!
+
+- **PayPal**: [paypal.me/boboidvtw168](https://paypal.me/boboidvtw168)

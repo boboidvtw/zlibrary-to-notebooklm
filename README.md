@@ -141,3 +141,9 @@ zlibrary-to-notebooklm/
 ## 📄 授權
 
 MIT License
+
+## ☕ 請我喝杯咖啡
+
+如果您覺得這個工具對您有幫助，歡迎贊助支持開發！
+
+- **PayPal**: [paypal.me/boboidvtw168](https://paypal.me/boboidvtw168)
